@@ -1,0 +1,4 @@
+- Install dependencies
+- Create `.env` due to `.env.example`
+- Start server using `npm run start`
+- Go to [http://localhost:3000/swagger](http://localhost:3000/swagger) to test API
