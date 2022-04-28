@@ -30,6 +30,13 @@ export class EventsService {
       orgId: organisationId,
     });
 
+    if (!data) {
+      return ({
+        count: 0,
+        averageVideoSize: 0,
+      });
+    }
+
     const averageFileSize = data.reduce((acc, curr) => {
       const fileSizeInBytes = bytes(curr.videoSize);
 
@@ -65,6 +72,13 @@ export class EventsService {
       },
     ]);
 
+    if (!data[0]) {
+      return ({
+        count: 0,
+        application: null,
+      });
+    }
+
     return ({
       count: data[0].count,
       application: data[0]._id,
@@ -77,6 +91,10 @@ export class EventsService {
       eventType: 'view',
       orgId: organisationId,
     });
+
+    if (!data.length) {
+      return 0;
+    }
 
     const sumOfPercentages = data.reduce((acc, curr) => {
       const watchedInMs = this.timeService.parse(curr.watchedDuration);
