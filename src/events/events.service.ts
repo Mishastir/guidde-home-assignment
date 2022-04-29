@@ -23,17 +23,19 @@ export class EventsService {
   }
 
   async uploadedVideos(organisationId: string) {
-    const sevenDaysMs = ONE_DAY * 1000 * 7;
+    const sevenDaysFromNowMs = dayjs()
+      .subtract(7, 'day')
+      .unix() * 1000;
 
     const data = await this.eventModel.find({
       eventType: 'upload',
       time: {
-        $gte: new Date(Date.now() - sevenDaysMs),
+        $gte: new Date(sevenDaysFromNowMs),
       },
       orgId: organisationId,
     });
 
-    if (!data) {
+    if (!data || !data.length) {
       return ({
         count: 0,
         averageVideoSize: 0,
@@ -112,12 +114,13 @@ export class EventsService {
   async getVideosPerDay(days: number, organisationId: string) {
     const dayFrom = dayjs().subtract(days, 'day');
     const datesArray = this.dateService.getDatesArray(dayFrom, dayjs());
+    const dayFromMs = dayFrom.unix() * 1000;
 
     const data = await this.eventModel.aggregate([
       {
         $match: {
           time: {
-            $gte: new Date(dayFrom.millisecond()),
+            $gte: new Date(dayFromMs),
           },
           orgId: organisationId,
         },
