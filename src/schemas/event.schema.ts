@@ -32,7 +32,7 @@ export class Event {
   @ApiProperty({ required: false })
   @Prop({
     validate(obj: string) {
-      if (!TIME_REG_EXP.test(obj)) {
+      if (!new RegExp(TIME_REG_EXP).test(obj)) {
         throw new Error('Wrong format');
       }
     },
@@ -42,7 +42,7 @@ export class Event {
   @ApiProperty({ required: false })
   @Prop({
     validate(obj: string) {
-      if (!TIME_REG_EXP.test(obj)) {
+      if (!new RegExp(TIME_REG_EXP).test(obj)) {
         throw new Error('Wrong format');
       }
     },
@@ -52,7 +52,7 @@ export class Event {
   @ApiProperty({ required: false })
   @Prop({
     validate(obj: string) {
-      if (!TIME_REG_EXP.test(obj)) {
+      if (!new RegExp(TIME_REG_EXP).test(obj)) {
         throw new Error('Wrong format');
       }
     },
@@ -74,7 +74,7 @@ export class Event {
   @ApiProperty({ required: false })
   @Prop({
     validate(obj: string) {
-      if (!TIME_REG_EXP.test(obj)) {
+      if (!new RegExp(TIME_REG_EXP).test(obj)) {
         throw new Error('Wrong format');
       }
     },
