@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bytes from 'bytes';
+import * as dayjs from 'dayjs';
 import { Model } from 'mongoose';
 import { ONE_DAY } from '../constants';
 import { Event, EventDocument } from '../schemas';
+import { DateService } from '../utils/date/date.service';
 import { TimeService } from '../utils/time/time.service';
 
 @Injectable()
@@ -12,6 +14,7 @@ export class EventsService {
     @InjectModel(Event.name)
     private readonly eventModel: Model<EventDocument>,
     private readonly timeService: TimeService,
+    private readonly dateService: DateService,
   ) {
   }
 
@@ -107,13 +110,14 @@ export class EventsService {
   }
 
   async getVideosPerDay(days: number, organisationId: string) {
-    const daysInMs = ONE_DAY * days * 1000;
+    const dayFrom = dayjs().subtract(days, 'day');
+    const datesArray = this.dateService.getDatesArray(dayFrom, dayjs());
 
     const data = await this.eventModel.aggregate([
       {
         $match: {
           time: {
-            $gte: new Date(Date.now() - daysInMs),
+            $gte: new Date(dayFrom.millisecond()),
           },
           orgId: organisationId,
         },
@@ -130,9 +134,15 @@ export class EventsService {
       },
     ]);
 
-    return data.map((el) => ({
-      date: el._id,
-      count: el.count,
-    }));
+    // As far as search in object by key is much faster than Array.includes, let`s change found array to {[date]: count}
+    const transformedData = data.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+
+      return acc;
+    }, {});
+
+    return datesArray.map((date) => {
+      return transformedData[date] || 0;
+    });
   }
 }
